@@ -1,0 +1,47 @@
+Pseudo code for Arduino 1:
+
+1. ShiftIn module (for getting data from registers)
+2. Finding line module
+3. Calculating position module
+
+Loop:
+
+if Arduino 2 is ready
+	collect data from all the shift registers
+	if data says that a line has been crossed by the ball
+		find the line that has been crossed and update the current and previous line values
+		Using the info from these, calculate the position of the ball based on the algorithm
+		update the current position and previous position values
+	If current x coordinate is different from previous x coordinate
+		set interrupt signal as high
+		communicate the new target posiion serially to arduino 2
+		set interrupt as low	
+
+
+
+Psuedo Code for motor(Arduino2):
+1.Reset Module
+2.Target Module
+3.Motor Class Module
+
+if reset button pressed or catch==1 or arduino started:
+    while the push button not pressed:
+        keeps moving left(backward)
+    Set targetpos =15 and ready=0
+
+    while the currentpos!=targetpos:
+        keep movingMotor()
+    set currentpos=targetpos in the middle and ready=1 and catch=0
+    stopmoving
+    turnonLED //to give a signal that robot is ready to receive the ball
+
+if readyPin is High.
+    Set the interrupt for receiving the signal from Arduino2.
+    Set the interrupt for reading the encoder values and updating the currentPos.
+    if(interrupt==1 && ready==1):
+        readSerialPort from Arduino2 and update the targetPos
+    until the targetPos==currentPos:
+        moveMotor
+    if currentPos is equal to targetPos or catch =1 or eventTimedOut
+        set catch value to 1 
+        set readyPin to LOW
